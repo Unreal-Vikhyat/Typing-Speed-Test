@@ -1,229 +1,155 @@
-//     const city = "Mathura";
-//     let age = 21;
+// Select the Start / Stop / Restart button
+let bnt = document.querySelector(".restart");
 
+// Select the timer text (60s)
+let timer = document.querySelector(".time");
 
 
+// Select the textarea where user types
+let textarea = document.querySelector(".typing-area");
 
-//     let x= 10;
-//      x =15;
+//  Select the text paragraph
+let text=document.querySelector(".quote");
 
-//     //console.log(y);
-//     let y=5;
+// select the WPM value
+let wpm=document.querySelector(".wpm");
 
-//     const ob= {1:"ram", 2:"shyam"};
-    
+// select the Accuracy Percentage
+let accuracy=document.querySelector(".accuracy");
 
-// console.log(null + 1); //1
-// console.log("5" + 3); //53
-// console.log("5" - 3); // 2
-// console.log(true); //true
+// total no of chars has been typed
+let totalchartyped=0;
 
+// Initial timer value
+let timeval = 60;
 
-// console.log(typeof []);
-// console.log(typeof null);
-// console.log(typeof 123n);
+// corrected chars typed 
+let correctChars = 0;
 
-// console.log(isEmpty("undefined"));
+// for indexing the para
+let cursorIndex = 0;
 
+// Flag to track whether test is running or not
+// false → stopped
+// true  → running
+let stopflag = false;
 
-// function isEmpty(value)
-// {
-//     if(value==null || value == undefined || value =="") return true ;
-//     else return false;
-// }
+// To store setInterval ID (needed to stop the timer later)
+let intervalId = null;
 
-// console.log("10" + 1); // 101
-// console.log("10" - 1);  //9
-// console.log(true + false);  // 1
-// console.log(!!"Sheryians"); // true
 
+// Function to start the test
+function btnstartstop() {
 
-// console.log(Calc(10,5,"+"));
+    // If test is already running, do nothing
+    if (stopflag) 
+    {
+        // Stop timer
+            clearInterval(intervalId);
 
-// //building a Calc 
+            // Change button text
+            bnt.innerText = "Restart";
 
-// function Calc(a , b, c )
-// {
-//     if(c==="+") return a+b;
-//     else if (c==="-") return a-b;
-//     else if (c==="*") return a*b;
-//     else if (c==="/") return a/b;
-//     else if (c==="%") return a%b;    
-// }
+            // Mark test as stopped
+            stopflag = false;
 
+            // Reset time for next run
+            timeval = 60;
+            wpm.innerText = "0";
+            accuracy.innerText = "0%";
 
-// for (let char of "Sheryians") {
-// console.log(char);
-// if(char==="y") break;
-// }
+            location.reload();
+            return;
+    }
 
+    // Change button text
+    bnt.innerText = "Stop";
 
-// let user = { name: "Harsh", age: 26 };
-// for (let x in user) {
-// console.log(x, user[x]);
-// }
+    // Mark test as started
+    stopflag = true;
 
+    // Start the timer
+    timervalue();
+}
 
-// let nums = [10, 20, 30];
-// nums.forEach((num) => {
-// console.log(num);
-// });
 
+// Function to handle countdown timer
+function timervalue() {
 
+    // Safety: clear any previous interval
+    clearInterval(intervalId);
 
+    // Start countdown every 1 second
+    intervalId = setInterval(function () {
 
-// let s = "String";
-// //Print 1 to 10 using for
-// for(let i=5; i>=0;i--)
-// {
-//     console.log(s[i]);
-// }
+        // Decrease time
+        timeval--;
 
+        // Update timer text
+        timer.innerText = `${timeval}s`;
 
+        // When time reaches 0
+        if (timeval === 0) {
+            
+            //location.reload();
 
-// function outer()
-// {
-//     let count = 0;
-//     return function ()
-//     {
-//         count++;
-//         console.log(count);
-//     };
-// }
-// let c=outer();
-// c();
-// c();
+            // Stop timer
+            clearInterval(intervalId);
 
+            // Change button text
+            bnt.innerText = "Restart";
 
-// let b = document.querySelector("body");
-// b.style.color="red";
-// b.style.backgroundColor="black";
+            // Mark test as stopped
+            stopflag = false;
 
+            // Reset time for next run
+            timeval = 60;
 
-// let a=document.createElement("a");
-// a.textContent="Google";
-// a.setAttribute("href","https://www.google.com");
-// a.style.color="red";
-// document.body.prepend(a);
+            wpm.innerText=0;
 
+            accuracy.innerText ="0%";
 
+            textarea.value = ""
 
+            correctChars = 0;
+            totalTypedChars = 0;
 
+            alert("Time End !!")
 
 
 
 
-// let ut=document.createElement("ul");
-// let li1=document.createElement("li");
-// let li2=document.createElement("li");
-// let li3=document.createElement("li");
-// let li4=document.createElement("li");
-// let li5=document.createElement("li");
+        }
 
-// li1.textContent="1poke";
-// li2.textContent="2poke";
-// li3.textContent="3poke";
-// li4.textContent="4poke";
-// li5.textContent="5poke";
+    }, 1000);
+}
 
-// document.body.append(ut);
 
-// document.querySelector("ul").append(li1);
-// document.querySelector("ul").append(li2);
-// document.querySelector("ul").append(li3);
-// document.querySelector("ul").append(li4);
-// document.querySelector("ul").append(li5);
+// Start test when button is clicked
+textarea.addEventListener("input", function (e) {
 
+    if (!stopflag) {
+        btnstartstop();
+    }
 
-// let x=document.querySelectorAll("li");
-// for(let i=0; i<=x.length; i+=2)
-// {
-//     x[i].style.color="red";
-// }
+    // Handle backspace → do NOT count typing
+    if (e.inputType === "deleteContentBackward") {
+        return;
+    }
 
+    totalchartyped++;
 
+    cursorIndex = textarea.value.length - 1;
 
+    // Count correct characters
+    if(text.innerText[cursorIndex]===textarea.value[cursorIndex]) 
+        { correctChars++; }
 
+    // WPM (still character-based for now)
+    wpm.innerText = Math.floor(correctChars / 5);
 
-
-
-// let s =document.querySelectorAll("li");
-
-// // for(let x in s)
-// // {
-// //     console.log(x);
-// // }
-
-// s.forEach(val=>console.log(val.textContent));
-
-
-
-// let p = document.querySelector("p").innerHTML="<b>updated</b> by javaScript";
-
-// let i=document.querySelector("img").getAttribute("src");
-// console.log(i);
-
-
-
-
-// let x = document.querySelectorAll("p");
-// x.forEach(val=>val.style.fontSize="18px");
-
-
-
-// EVENT AND EVENT HANDLING 
-
-// let h = document.querySelector("h1");
-
-// h.addEventListener("click", funcetion(){
-//     h.style.color="black"});
-// h.addEventListener("dblclick", ChangeColor);
-
-
-// function ChangeColor() {
-//     h.classList.add("Ccolor");
-// }
-
-
-
-// let inp = document.querySelector("select");
-// let h1= document.querySelector("h3");
-// inp.addEventListener("change",function(data)
-// {
-//     h1.textContent=`${data.target.value} Selected`;
-//     console.log(data.target.value);
-// });
-
-let inputs = document.querySelectorAll("form input[type='text']");
-let button = document.querySelector("#button");
-
-button.addEventListener("click", function (e) {
-    e.preventDefault();
-    toba();
+    // Accuracy (never > 100 now)
+    let acc = (correctChars / totalchartyped) * 100;
+    accuracy.innerText = `${Math.round(acc)}%`;
 });
 
-function toba() {
-    let body = document.body;
-
-    let main = document.createElement("div");
-    main.id="main";
-
-    let Profile = document.createElement("div");
-    Profile.id="Profile";
-
-    let img = document.createElement("img");
-    img.src = inputs[0].value;
-
-    let h3 = document.createElement("h3");
-    h3.textContent = inputs[1].value;
-
-    let h5 = document.createElement("h5");
-    h5.textContent = inputs[2].value;
-
-    let p = document.createElement("p");
-    p.textContent = inputs[3].value;
-
-    Profile.appendChild(img);
-    main.append(Profile, h3, h5, p);
-    body.appendChild(main);
-}
